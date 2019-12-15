@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@ionic/core/css/ionic.bundle.css"
+    />
+    <script
+      type="module"
+      src="https://cdn.jsdelivr.net/npm/@ionic/core/dist/ionic/ionic.esm.js"
+    ></script>
+    <script
+      nomodule
+      src="https://cdn.jsdelivr.net/npm/@ionic/core/dist/ionic/ionic.js"
+    ></script>
+    <script src="elm.js"></script>
+    <script>
+      addEventListener("DOMContentLoaded", () => {
+        const { ports } = Elm.Main.init({
+          node: document.getElementById("elm")
+        });
+
+        ports.createAlert.subscribe(async ({ header, message }) => {
+          const alertController = document.querySelector(
+            "ion-alert-controller"
+          );
+          const alert = await alertController.create({
+            header,
+            message,
+            buttons: [
+              {
+                text: "OK",
+                handler: () => ports.onClickOkButton.send(null)
+              }
+            ]
+          });
+          await alert.present();
+        });
+
+        ports.createLoading.subscribe(async () => {
+          const loadingController = document.querySelector(
+            "ion-loading-controller"
+          );
+          const loading = await loadingController.create({
+            duration: 3000,
+            message: "Please wait ..."
+          });
+          await loading.present();
+        });
+
+        ports.createToast.subscribe(async () => {
+          const toastController = document.querySelector(
+            "ion-toast-controller"
+          );
+          const toast = await toastController.create({
+            duration: 3000,
+            message: "Hello World !"
+          });
+          await toast.present();
+        });
+
+        ports.refreshComplete.subscribe(async () => {
+          const refresher = document.querySelector("ion-refresher");
+
+          if (refresher) {
+            refresher.complete();
+          }
+        });
+      });
+    </script>
+  </head>
+
+  <body>
+    <div id="elm"></div>
+  </body>
+</html>
